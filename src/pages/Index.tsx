@@ -3,11 +3,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import { GameState, Action } from "@/types/game";
 import { createNewGame, performAction } from "@/utils/gameLogic";
 import { getAiHint, getBotAction } from "@/utils/aiHelpers";
+import { getGoogleAIHint, getGoogleBotAction, isGoogleAIConfigured } from "@/utils/googleAI";
 import GameGrid from "@/components/GameGrid";
 import PerceptDisplay from "@/components/PerceptDisplay";
 import ActionButtons from "@/components/ActionButtons";
 import AIHint from "@/components/AIHint";
 import BotModeToggle from "@/components/BotModeToggle";
+import GoogleAIConfig from "@/components/GoogleAIConfig";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -23,6 +25,8 @@ const Index = () => {
   const [botMode, setBotMode] = useState<boolean>(false);
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [botInterval, setBotInterval] = useState<NodeJS.Timeout | null>(null);
+  const [useGoogleAI, setUseGoogleAI] = useState<boolean>(false);
+  const [googleAIConfigured, setGoogleAIConfigured] = useState<boolean>(isGoogleAIConfigured());
 
   // Handle player actions
   const handleAction = useCallback((action: Action) => {
@@ -51,16 +55,25 @@ const Index = () => {
   }, []);
   
   // Get a new AI hint
-  const refreshHint = useCallback(() => {
+  const refreshHint = useCallback(async () => {
     setHintLoading(true);
     
-    // Simulate API call delay (would use Genkit in a real implementation)
-    setTimeout(() => {
-      const newHint = getAiHint(gameState);
+    try {
+      let newHint;
+      if (useGoogleAI && googleAIConfigured) {
+        newHint = await getGoogleAIHint(gameState);
+      } else {
+        // Fallback to built-in AI helper
+        newHint = getAiHint(gameState);
+      }
       setHint(newHint);
+    } catch (error) {
+      console.error("Error getting AI hint:", error);
+      setHint("Error getting AI hint. Please try again.");
+    } finally {
       setHintLoading(false);
-    }, 500);
-  }, [gameState]);
+    }
+  }, [gameState, useGoogleAI, googleAIConfigured]);
   
   // Effect to refresh hint when game state changes
   useEffect(() => {
@@ -77,21 +90,32 @@ const Index = () => {
     
     // If bot mode is enabled and game is active, start the bot
     if (botMode && !gameState.gameOver && !gameState.gameWon) {
-      const interval = setInterval(() => {
-        const action = getBotAction(gameState);
-        handleAction(action);
+      const interval = setInterval(async () => {
+        try {
+          let action;
+          if (useGoogleAI && googleAIConfigured) {
+            action = await getGoogleBotAction(gameState);
+          } else {
+            action = getBotAction(gameState);
+          }
+          handleAction(action as Action);
+        } catch (error) {
+          console.error("Error in bot mode:", error);
+          setBotMode(false);
+          toast.error("Bot mode encountered an error and has been deactivated.");
+        }
       }, 1000); // Make a move every second
       
       setBotInterval(interval);
       
       // Notify user that bot mode is active
-      toast.info("Bot mode activated. The AI will play automatically.");
+      toast.info(`${useGoogleAI ? "Google AI" : "AI"} bot mode activated. The AI will play automatically.`);
     }
     
     return () => {
       if (botInterval) clearInterval(botInterval);
     };
-  }, [botMode, gameState, handleAction]);
+  }, [botMode, gameState, handleAction, useGoogleAI, googleAIConfigured]);
   
   // Stop bot mode when game ends
   useEffect(() => {
@@ -99,6 +123,26 @@ const Index = () => {
       setBotMode(false);
     }
   }, [gameState.gameOver, gameState.gameWon, botMode]);
+
+  // Handle Google AI configuration
+  const handleGoogleAIConfigured = useCallback((configured: boolean) => {
+    setGoogleAIConfigured(configured);
+    if (configured && !useGoogleAI) {
+      setUseGoogleAI(true);
+      toast.success("Google AI configured. Switching to Google AI for hints and bot mode.");
+    }
+  }, [useGoogleAI]);
+
+  // Toggle Google AI usage
+  const toggleGoogleAI = useCallback(() => {
+    if (!googleAIConfigured) {
+      toast.error("Please configure Google AI first");
+      return;
+    }
+    
+    setUseGoogleAI(prev => !prev);
+    refreshHint();
+  }, [googleAIConfigured, refreshHint]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -156,6 +200,9 @@ const Index = () => {
 
         <div className="game-layout">
           <div className="game-info">
+            {/* Google AI Configuration */}
+            <GoogleAIConfig onConfigured={handleGoogleAIConfigured} />
+            
             <div className="mb-6">
               <PerceptDisplay percepts={gameState.percepts} />
             </div>
@@ -171,8 +218,22 @@ const Index = () => {
             </div>
             
             <div className="mb-6">
-              <AIHint hint={hint} isLoading={hintLoading} />
-              <div className="flex justify-end mt-2">
+              <AIHint 
+                hint={hint} 
+                isLoading={hintLoading} 
+                isGoogleAI={useGoogleAI && googleAIConfigured}
+              />
+              <div className="flex justify-between mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleGoogleAI}
+                  className="text-xs"
+                  disabled={!googleAIConfigured}
+                >
+                  {useGoogleAI ? "Use Built-in AI" : "Use Google AI"}
+                </Button>
+                
                 <Button
                   variant="outline"
                   size="sm"
@@ -190,6 +251,7 @@ const Index = () => {
               botMode={botMode}
               onToggle={setBotMode}
               disabled={gameState.gameOver || gameState.gameWon}
+              isGoogleAI={useGoogleAI && googleAIConfigured}
             />
           </div>
           

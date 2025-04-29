@@ -8,13 +8,21 @@ interface BotModeToggleProps {
   botMode: boolean;
   onToggle: (value: boolean) => void;
   disabled?: boolean;
+  isGoogleAI?: boolean;
 }
 
-const BotModeToggle: React.FC<BotModeToggleProps> = ({ botMode, onToggle, disabled = false }) => {
+const BotModeToggle: React.FC<BotModeToggleProps> = ({ 
+  botMode, 
+  onToggle, 
+  disabled = false,
+  isGoogleAI = false
+}) => {
   return (
     <div className="flex items-center space-x-2 bg-card rounded-lg p-3 shadow-md">
       <Bot className={`${botMode ? "text-wumpus-accent" : "text-muted-foreground"}`} size={18} />
-      <Label htmlFor="bot-mode" className={disabled ? "text-muted-foreground" : ""}>Bot Mode</Label>
+      <Label htmlFor="bot-mode" className={disabled ? "text-muted-foreground" : ""}>
+        {isGoogleAI ? "Google AI Bot" : "Bot Mode"}
+      </Label>
       <Switch 
         id="bot-mode" 
         checked={botMode} 

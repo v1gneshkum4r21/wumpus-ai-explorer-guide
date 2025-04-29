@@ -5,14 +5,17 @@ import { Lightbulb } from "lucide-react";
 interface AIHintProps {
   hint: string;
   isLoading?: boolean;
+  isGoogleAI?: boolean;
 }
 
-const AIHint: React.FC<AIHintProps> = ({ hint, isLoading = false }) => {
+const AIHint: React.FC<AIHintProps> = ({ hint, isLoading = false, isGoogleAI = false }) => {
   return (
-    <div className="hint-box">
+    <div className="hint-box bg-card rounded-lg p-4 shadow-md">
       <div className="flex items-center mb-2">
         <Lightbulb className="text-wumpus-accent mr-2" size={18} />
-        <h3 className="text-lg font-semibold">AI Hint</h3>
+        <h3 className="text-lg font-semibold">
+          {isGoogleAI ? "Google AI Hint" : "AI Hint"}
+        </h3>
       </div>
       
       {isLoading ? (
