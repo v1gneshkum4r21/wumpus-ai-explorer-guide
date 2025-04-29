@@ -11,7 +11,7 @@ interface GoogleAIConfigProps {
 
 const GoogleAIConfig: React.FC<GoogleAIConfigProps> = ({ onConfigured }) => {
   const [apiKey, setApiKey] = useState<string>("");
-  const [model, setModel] = useState<string>("gemini-pro");
+  const [model, setModel] = useState<string>("gemini-1.0-pro");
   const [isConfigured, setIsConfigured] = useState<boolean>(isGoogleAIConfigured());
   const [error, setError] = useState<string>("");
 
@@ -22,14 +22,14 @@ const GoogleAIConfig: React.FC<GoogleAIConfigProps> = ({ onConfigured }) => {
     }
 
     try {
-      initGoogleAI(apiKey.trim(), model.trim() || "gemini-pro");
+      initGoogleAI(apiKey.trim(), model.trim() || "gemini-1.0-pro");
       setIsConfigured(true);
       setError("");
       onConfigured(true);
       
       // Save API key to localStorage (Note: in a production app, consider more secure storage)
       localStorage.setItem("googleAIApiKey", apiKey.trim());
-      localStorage.setItem("googleAIModel", model.trim() || "gemini-pro");
+      localStorage.setItem("googleAIModel", model.trim() || "gemini-1.0-pro");
     } catch (err) {
       console.error("Error configuring Google AI:", err);
       setError("Failed to configure Google AI");
@@ -44,8 +44,8 @@ const GoogleAIConfig: React.FC<GoogleAIConfigProps> = ({ onConfigured }) => {
     
     if (savedApiKey) {
       setApiKey(savedApiKey);
-      setModel(savedModel || "gemini-pro");
-      initGoogleAI(savedApiKey, savedModel || "gemini-pro");
+      setModel(savedModel || "gemini-1.0-pro");
+      initGoogleAI(savedApiKey, savedModel || "gemini-1.0-pro");
       setIsConfigured(true);
       onConfigured(true);
     }
@@ -73,9 +73,9 @@ const GoogleAIConfig: React.FC<GoogleAIConfigProps> = ({ onConfigured }) => {
             id="model"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            placeholder="gemini-pro"
+            placeholder="gemini-1.0-pro"
           />
-          <p className="text-xs text-muted-foreground">Default: gemini-pro</p>
+          <p className="text-xs text-muted-foreground">Default: gemini-1.0-pro</p>
         </div>
         
         {error && <p className="text-red-500 text-sm">{error}</p>}

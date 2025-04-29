@@ -10,7 +10,7 @@ interface GoogleAIConfig {
 let config: GoogleAIConfig | null = null;
 
 // Initialize the Google AI configuration
-export const initGoogleAI = (apiKey: string, model: string = "gemini-pro"): void => {
+export const initGoogleAI = (apiKey: string, model: string = "gemini-1.0-pro"): void => {
   config = {
     apiKey,
     model
@@ -31,7 +31,7 @@ export const getGoogleAIHint = async (state: GameState): Promise<string> => {
   try {
     const prompt = generatePrompt(state);
     
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + config.model + ":generateContent", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${config.model}:generateContent`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,6 +60,9 @@ export const getGoogleAIHint = async (state: GameState): Promise<string> => {
       return data.candidates[0].content.parts[0].text;
     } else if (data.promptFeedback?.blockReason) {
       return `AI response blocked: ${data.promptFeedback.blockReason}`;
+    } else if (data.error) {
+      console.error("Google AI API error:", data.error);
+      return `Error: ${data.error.message || "Unknown API error"}`;
     } else {
       console.error("Unexpected Google AI response format:", data);
       return "Unable to generate a hint. Please try again.";
@@ -109,7 +112,7 @@ Based on the game state, return ONLY ONE of these actions without any explanatio
 "moveForward", "turnLeft", "turnRight", "grab", "shoot", "restart"
 `;
     
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + config.model + ":generateContent", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${config.model}:generateContent`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -145,6 +148,9 @@ Based on the game state, return ONLY ONE of these actions without any explanatio
         console.warn("Invalid action returned by Google AI:", action);
         return "moveForward"; // Default to a safe action
       }
+    } else if (data.error) {
+      console.error("Google AI API error for bot action:", data.error);
+      return "moveForward"; // Default to a safe action
     } else {
       console.error("Unexpected Google AI response format:", data);
       return "moveForward";
@@ -154,4 +160,3 @@ Based on the game state, return ONLY ONE of these actions without any explanatio
     return "moveForward";
   }
 };
-
