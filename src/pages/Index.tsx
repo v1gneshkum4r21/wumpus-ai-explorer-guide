@@ -12,10 +12,12 @@ import BotModeToggle from "@/components/BotModeToggle";
 import GoogleAIConfig from "@/components/GoogleAIConfig";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import {
   CircleHelp,
   Trophy,
   Skull,
+  Code,
 } from "lucide-react";
 
 const Index = () => {
@@ -152,6 +154,12 @@ const Index = () => {
           <p className="text-lg text-muted-foreground">
             Navigate through a dangerous cave to find gold and escape!
           </p>
+          <div className="mt-2 flex justify-center space-x-4">
+            <Link to="/algorithms" className="inline-flex items-center text-sm text-blue-500 hover:text-blue-700">
+              <Code className="mr-1" size={16} />
+              Pathfinding Algorithms
+            </Link>
+          </div>
         </header>
 
         {/* Game status */}
