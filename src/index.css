@@ -1,92 +1,39 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 260 25% 11%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 260 25% 14%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 260 25% 14%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 262 84% 75%;
+    --primary-foreground: 260 25% 11%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 262 83% 58%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 260 25% 20%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 262 72% 46%;
     --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 260 25% 20%;
+    --input: 260 25% 20%;
+    --ring: 262 83% 58%;
+
+    --radius: 0.5rem;
   }
 }
 
@@ -97,5 +44,79 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .cell {
+    @apply w-16 h-16 border border-border flex items-center justify-center relative transition-all duration-200;
+  }
+
+  .cell-visited {
+    @apply bg-muted;
+  }
+
+  .cell-current {
+    @apply border-2 border-wumpus-accent;
+  }
+
+  .wumpus-icon {
+    @apply text-wumpus-danger;
+  }
+
+  .gold-icon {
+    @apply text-wumpus-gold;
+  }
+
+  .pit-icon {
+    @apply text-gray-700;
+  }
+
+  .agent {
+    @apply absolute w-8 h-8 transform transition-transform duration-300;
+  }
+
+  .agent-north {
+    @apply rotate-0;
+  }
+  
+  .agent-east {
+    @apply rotate-90;
+  }
+  
+  .agent-south {
+    @apply rotate-180;
+  }
+  
+  .agent-west {
+    @apply rotate-[270deg];
+  }
+
+  .percept-indicator {
+    @apply w-6 h-6 rounded-full m-1 flex items-center justify-center;
+  }
+
+  .percept-active {
+    @apply animate-pulse-glow;
+  }
+
+  .action-button {
+    @apply flex items-center justify-center px-4 py-2 rounded-lg bg-accent hover:bg-accent/80 transition-colors;
+  }
+
+  .hint-box {
+    @apply bg-card p-4 rounded-lg border border-wumpus-accent shadow-md;
+  }
+
+  .game-layout {
+    @apply container mx-auto p-4 grid grid-cols-1 md:grid-cols-3 gap-6;
+  }
+
+  .game-info {
+    @apply md:col-span-1 space-y-6;
+  }
+
+  .game-board {
+    @apply md:col-span-2;
   }
 }
