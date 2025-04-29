@@ -21,12 +21,13 @@ import {
 const Index = () => {
   // Game state
   const [gameState, setGameState] = useState<GameState>(createNewGame);
-  const [hint, setHint] = useState<string>("Welcome to Wumpus World! I'll help guide you through the cave.");
+  const [hint, setHint] = useState<string>("Welcome to Wumpus World! Click 'New Hint' to get AI guidance.");
   const [botMode, setBotMode] = useState<boolean>(false);
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [botInterval, setBotInterval] = useState<NodeJS.Timeout | null>(null);
   const [useGoogleAI, setUseGoogleAI] = useState<boolean>(false);
   const [googleAIConfigured, setGoogleAIConfigured] = useState<boolean>(isGoogleAIConfigured());
+  const [showHint, setShowHint] = useState<boolean>(false);
 
   // Handle player actions
   const handleAction = useCallback((action: Action) => {
@@ -57,6 +58,7 @@ const Index = () => {
   // Get a new AI hint
   const refreshHint = useCallback(async () => {
     setHintLoading(true);
+    setShowHint(true);
     
     try {
       let newHint;
@@ -75,10 +77,8 @@ const Index = () => {
     }
   }, [gameState, useGoogleAI, googleAIConfigured]);
   
-  // Effect to refresh hint when game state changes
-  useEffect(() => {
-    refreshHint();
-  }, [gameState, refreshHint]);
+  // Don't automatically refresh hint when game state changes
+  // We removed the useEffect that was here
   
   // Effect to handle bot mode
   useEffect(() => {
@@ -141,8 +141,8 @@ const Index = () => {
     }
     
     setUseGoogleAI(prev => !prev);
-    refreshHint();
-  }, [googleAIConfigured, refreshHint]);
+    // Don't automatically refresh hint when toggling AI
+  }, [googleAIConfigured]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -218,10 +218,12 @@ const Index = () => {
             </div>
             
             <div className="mb-6">
+              {/* Only show the hint when showHint is true */}
               <AIHint 
                 hint={hint} 
                 isLoading={hintLoading} 
                 isGoogleAI={useGoogleAI && googleAIConfigured}
+                hidden={!showHint}
               />
               <div className="flex justify-between mt-2">
                 <Button
@@ -242,7 +244,7 @@ const Index = () => {
                   disabled={hintLoading}
                 >
                   <CircleHelp className="mr-1" size={14} />
-                  New Hint
+                  {showHint ? "New Hint" : "Get Hint"}
                 </Button>
               </div>
             </div>

@@ -6,9 +6,19 @@ interface AIHintProps {
   hint: string;
   isLoading?: boolean;
   isGoogleAI?: boolean;
+  hidden?: boolean;
 }
 
-const AIHint: React.FC<AIHintProps> = ({ hint, isLoading = false, isGoogleAI = false }) => {
+const AIHint: React.FC<AIHintProps> = ({ 
+  hint, 
+  isLoading = false, 
+  isGoogleAI = false, 
+  hidden = false 
+}) => {
+  if (hidden) {
+    return null;
+  }
+  
   return (
     <div className="hint-box bg-card rounded-lg p-4 shadow-md">
       <div className="flex items-center mb-2">
