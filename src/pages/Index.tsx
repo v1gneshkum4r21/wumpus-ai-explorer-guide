@@ -200,13 +200,7 @@ const Index = () => {
 
         <div className="game-layout">
           <div className="game-info">
-            {/* Google AI Configuration */}
-            <GoogleAIConfig onConfigured={handleGoogleAIConfigured} />
-            
-            <div className="mb-6">
-              <PerceptDisplay percepts={gameState.percepts} />
-            </div>
-            
+            {/* Moved Action Buttons to the top */}
             <div className="mb-6">
               <ActionButtons
                 onAction={handleAction}
@@ -215,6 +209,10 @@ const Index = () => {
                 gameOver={gameState.gameOver}
                 gameWon={gameState.gameWon}
               />
+            </div>
+            
+            <div className="mb-6">
+              <PerceptDisplay percepts={gameState.percepts} />
             </div>
             
             <div className="mb-6">
@@ -255,6 +253,9 @@ const Index = () => {
               disabled={gameState.gameOver || gameState.gameWon}
               isGoogleAI={useGoogleAI && googleAIConfigured}
             />
+            
+            {/* Moved Google AI Configuration to the bottom */}
+            <GoogleAIConfig onConfigured={handleGoogleAIConfigured} />
           </div>
           
           <div className="game-board">
